@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                    // Versão do JavaScript para qual o TypeScript será compilado
+    "module": "commonjs",                  // Sistema de módulos usado pelo Node.js
+    "outDir": "./dist",                    // Diretório de saída para os arquivos compilados
+    "rootDir": "./src",  
+    "jsx": "react-jsx",                  // Diretório de onde o TypeScript vai ler os arquivos de entrada
+    "strict": true,                        // Habilita todas as verificações de tipo estritas
+    "esModuleInterop": true,               // Permite importações de módulos CommonJS em um estilo ES
+    "skipLibCheck": true,                  // Ignora a verificação de tipo dos arquivos de declaração (.d.ts)
+    "forceConsistentCasingInFileNames": true, // Garante consistência de maiúsculas/minúsculas nos nomes dos arquivos
+    "resolveJsonModule": true, 
+    "typeRoots": ["./node_modules/@types", "types"] 
+  },
+  "files": ["./src/types/express-session.ts"],
+  "include": ["./src/**/*", "types/**/*"],// Diretórios e arquivos que devem ser incluídos no processo de compilação
+  "exclude": ["./node_modules", "**/*.test.ts"] // Diretórios e arquivos que devem ser excluídos do processo de compilação
+}

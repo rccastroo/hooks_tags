@@ -1,0 +1,59 @@
+version: '3.9'
+
+networks:
+  henrinetwork:
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    volumes:
+       - ./pgdata:/var/lib/postgresql/data
+       - ./db-scripts/init:/docker-entrypoint-initdb.d
+    networks:
+      - henrinetwork
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 15s
+      timeout: 8s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: always
+    environment:
+      POSTGRES_HOST: ${DB_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: ${POSTGRES_DB}
+      DB_PORT: 5432 #Porta do container
+      BACK_PORT: ${BACK_PORT}
+      FRONT_PORT: ${FRONT_PORT}
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "${BACK_PORT}:3001"
+    networks:
+      - henrinetwork
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "${FRONT_PORT}:3000" # Mapeia a porta 3000 do container para a porta 80 do host
+    environment:
+      -  REACT_APP_API_PORT=${BACK_PORT} # Define a variável de ambiente PORT no container
+    networks:
+      - henrinetwork
